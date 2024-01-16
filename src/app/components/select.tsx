@@ -1,12 +1,7 @@
 "use client";
 import { User } from "@/data";
 import Dog from "@/assets/dog.png";
-import {
-    ChangeEvent,
-    FormEvent,
-    KeyboardEvent,
-    useState,
-} from "react";
+import { ChangeEvent, FormEvent, KeyboardEvent, useState } from "react";
 import Image from "next/image";
 
 interface SelectProps {
@@ -14,12 +9,11 @@ interface SelectProps {
   options: User[];
 }
 
-function Select({ options, placeholder }: SelectProps) {
+function MultiSelect({ options, placeholder }: SelectProps) {
   const [selectedUsers, setSelectedUsers] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [inputString, setInputString] = useState("");
   const [highlightedUserIndex, setHighlightedUserIndex] = useState(0);
-
 
   const onChange = (e: ChangeEvent<HTMLInputElement>) => {
     setInputString(e.target.value);
@@ -32,7 +26,6 @@ function Select({ options, placeholder }: SelectProps) {
             option.name.toLowerCase().includes(e.target.value.toLowerCase())
         )
       );
-
     } else setFilteredUsers([]);
   };
 
@@ -102,20 +95,25 @@ function Select({ options, placeholder }: SelectProps) {
             value={inputString}
             onChange={onChange}
             onKeyDown={handleKeyDown}
-            onFocus={() =>
+            onFocus={() => {
+              const currentSelectedUserNames = selectedUsers.map(
+                (user) => user.name
+              );
               setFilteredUsers(
-                options
-                  .filter((x) =>
-                    x.name.toLowerCase().includes(inputString.toLowerCase())
-                  )
-                  .filter((x) => !selectedUsers.map((y) => y).includes(x))
-              )
-            }
+                options.filter(
+                  (option) =>
+                    !currentSelectedUserNames.includes(option.name) &&
+                    option.name
+                      .toLowerCase()
+                      .includes(inputString.toLowerCase())
+                )
+              );
+            }}
           />
           <button type="submit" className="den" />
         </form>
         {filteredUsers.length > 0 && (
-          <div className="absolute top-[110%] left-0 w-full shadow-md z-20 rounded-sm">
+          <div className="max-h-[250px] absolute top-[110%] left-0 w-full shadow-md z-20 rounded-sm overflow-auto">
             <ul className="bg-white">
               {filteredUsers.map((user, index) => (
                 <li
@@ -161,4 +159,4 @@ function Select({ options, placeholder }: SelectProps) {
   );
 }
 
-export default Select;
+export default MultiSelect;
